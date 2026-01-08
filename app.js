@@ -1,4 +1,4 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwQeT23k9_zhok50t7rHWKhRJEzWcYRc-cLL3bUhXO_N9iclw8l_QETgWFczacOihBMfQ/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzSJAUTIr8z5rQyXkWeji7j38Wkr3JVhbjhGLfN0vOBhY00xiJTaZOY1inp3HcMfeGjhw/exec';
 let loggedInUser = { id: "", name: "" };
 
 // ログイン処理

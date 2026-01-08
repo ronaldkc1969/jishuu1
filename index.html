@@ -16,11 +16,10 @@
         .card { background: white; padding: 30px; margin-bottom: 25px; border-radius: 12px; box-shadow: var(--card-shadow); }
         h1, h2, h3 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
         
-        /* 入力欄の大型化設定 */
         .form-control { width: 100%; padding: 15px; font-size: 16px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; transition: border-color 0.2s; }
         .form-control:focus { border-color: var(--primary-color); outline: none; background: #fff; }
         textarea.form-control { min-height: 120px; resize: vertical; }
-        .reflection-area { min-height: 450px !important; } /* 振り返り欄を最大化 */
+        .reflection-area { min-height: 450px !important; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .btn { padding: 15px 25px; cursor: pointer; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; transition: all 0.2s; display: inline-block; text-align: center; }
@@ -28,13 +27,11 @@
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-secondary { background: #6c757d; color: white; margin-top: 10px; }
         
-        /* リスト表示 */
         #dateList { max-height: 250px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; }
         .date-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #fff; }
         .date-item:hover { background: #e9ecef; }
         .date-item b { color: var(--primary-color); }
 
-        /* 活動記録テーブル */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #dee2e6; padding: 12px; vertical-align: top; }
         th { background: #f1f3f5; font-size: 14px; text-align: center; }
@@ -71,14 +68,13 @@
 
         <div class="grid">
             <div class="card">
-                <h3>新規作成 </h3>
+                <h3>新規作成</h3>
                 <p>新しい日付の日誌を作成します。</p>
                 <input type="date" id="newDate" class="form-control">
                 <button onclick="createNewEntry()" class="btn btn-primary" style="width:100%; margin-top:15px;">新規日誌を作成</button>
             </div>
-
             <div class="card">
-                <h3>保存済みから追記 </h3>
+                <h3>保存済みから追記</h3>
                 <p>過去の記録を選択して修正・追記します。</p>
                 <div id="dateList">データを読み込み中...</div>
             </div>
@@ -86,11 +82,11 @@
 
         <form id="journalForm" class="hidden">
             <div class="card">
-                <h2>基本情報 </h2>
+                <h2>基本情報</h2>
                 <div class="grid">
                     <div>
                         <label>実習日目</label>
-                        <input type="number" id="practiceDay" class="form-control" required placeholder="例: 1">
+                        <input type="number" id="practiceDay" class="form-control" required>
                     </div>
                     <div>
                         <label>年月日</label>
@@ -110,12 +106,12 @@
             </div>
 
             <div class="card">
-                <h2>本日の学習目標 </h2>
-                <textarea id="learningGoals" class="form-control" placeholder="今日の実習で学びたいこと、達成したい目標を記入してください"></textarea>
+                <h2>本日の学習目標</h2>
+                <textarea id="learningGoals" class="form-control"></textarea>
             </div>
 
             <div class="card">
-                <h2>活動記録 </h2>
+                <h2>活動記録</h2>
                 <table id="activityTable">
                     <thead>
                         <tr>
@@ -131,19 +127,18 @@
             </div>
 
             <div class="card">
-                <h2>今日一日を振り返って [cite: 5]</h2>
-                <p style="font-size: 13px; color: #666; margin-top: -10px;">（印象に残った学び、それを通して考えたこと、感じたこと）</p>
-                <textarea id="reflection" class="form-control reflection-area" placeholder="具体的な場面と共に詳しく記入してください"></textarea>
+                <h2>今日一日を振り返って</h2>
+                <textarea id="reflection" class="form-control reflection-area"></textarea>
             </div>
 
             <div class="card">
-                <h2>明日への課題 [cite: 5]</h2>
-                <textarea id="tomorrowTasks" class="form-control" placeholder="次回の実習に向けた課題を記入してください"></textarea>
+                <h2>明日への課題</h2>
+                <textarea id="tomorrowTasks" class="form-control"></textarea>
             </div>
 
             <div class="card">
-                <h2>実習指導者からのコメント [cite: 5]</h2>
-                <textarea id="instructorComment" class="form-control" placeholder="（指導者記入欄）"></textarea>
+                <h2>実習指導者からのコメント</h2>
+                <textarea id="instructorComment" class="form-control"></textarea>
             </div>
 
             <div style="position: sticky; bottom: 20px;">
@@ -154,15 +149,13 @@
 </div>
 
 <script>
-    // ★重要: GASのウェブアプリURLに差し替えてください
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxzIcQ-9ZVaCEmnquYPiEDmxOUZfN9Wxl_ReBh4qpyUMGqLpJ_q3kknG-9geQhXDETmYw/exec"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxzIcQ-9ZVaCEmnquYPiEDmxOUZfN9Wxl_ReBh4qpyUMGqLpJ_q3kknG-9geQhXDETmYw/exec"; // GASのURLを入れてください
     let currentUser = { id: "", name: "" };
 
     async function login() {
         const studentId = document.getElementById('studentId').value;
         const password = document.getElementById('password').value;
         const errDiv = document.getElementById('loginError');
-        
         try {
             const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", studentId, password })});
             const result = await res.json();
@@ -172,24 +165,17 @@
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 refreshDateList();
-            } else {
-                errDiv.classList.remove('hidden');
-            }
-        } catch (e) { alert("接続エラーが発生しました。GASのURLを確認してください。"); }
+            } else { errDiv.classList.remove('hidden'); }
+        } catch (e) { alert("接続エラーが発生しました。"); }
     }
 
     async function refreshDateList() {
         const listDiv = document.getElementById('dateList');
         const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getList", studentId: currentUser.id })});
         const result = await res.json();
-        
         if (result.dates && result.dates.length > 0) {
-            listDiv.innerHTML = result.dates.map(date => 
-                `<div class="date-item" onclick="loadSpecificDate('${date}')"><span>📅 ${date}</span> <b>編集 ></b></div>`
-            ).join('');
-        } else {
-            listDiv.innerHTML = "<p style='padding:15px;'>保存された日誌はありません。</p>";
-        }
+            listDiv.innerHTML = result.dates.map(date => `<div class="date-item" onclick="loadSpecificDate('${date}')"><span>📅 ${date}</span> <b>編集 ></b></div>`).join('');
+        } else { listDiv.innerHTML = "<p style='padding:15px;'>保存された日誌はありません。</p>"; }
     }
 
     function createNewEntry() {
@@ -208,24 +194,29 @@
         const result = await res.json();
         if (result.success) {
             const d = result.data;
+            // ヘルパー関数: スプレッドシートの値が空(undefined, null)なら空文字を返す
+            const val = (v) => (v === undefined || v === null) ? "" : v;
+
             document.getElementById('journalForm').classList.remove('hidden');
-            document.getElementById('practiceDay').value = d[3];
+            document.getElementById('practiceDay').value = val(d[3]);
             document.getElementById('practiceDate').value = date;
-            document.getElementById('attendanceTime').value = d[5];
-            document.getElementById('exitTime').value = d[6];
-            document.getElementById('learningGoals').value = d[7];
+            document.getElementById('attendanceTime').value = val(d[5]);
+            document.getElementById('exitTime').value = val(d[6]);
+            document.getElementById('learningGoals').value = val(d[7]);
             
-            // 活動記録の復元
+            // 活動記録
             const body = document.getElementById('activityBody');
             body.innerHTML = "";
-            const activities = JSON.parse(d[8]);
-            if(activities.length > 0) {
-                activities.forEach(a => addActivityRow(a.start, a.end, a.schedule, a.action));
-            } else { addActivityRow(); }
+            try {
+                const activities = JSON.parse(d[8]);
+                if(activities && activities.length > 0) {
+                    activities.forEach(a => addActivityRow(val(a.start), val(a.end), val(a.schedule), val(a.action)));
+                } else { addActivityRow(); }
+            } catch(e) { addActivityRow(); }
 
-            document.getElementById('reflection').value = d[9];
-            document.getElementById('tomorrowTasks').value = d[10];
-            document.getElementById('instructorComment').value = d[11];
+            document.getElementById('reflection').value = val(d[9]);
+            document.getElementById('tomorrowTasks').value = val(d[10]);
+            document.getElementById('instructorComment').value = val(d[11]);
             document.getElementById('journalForm').scrollIntoView({behavior: "smooth"});
         }
     }
@@ -233,14 +224,8 @@
     function addActivityRow(start="", end="", schedule="", action="") {
         const rowId = Date.now() + Math.random();
         const row = `<tr id="row_${rowId}">
-            <td>
-                <div class="time-select-group">
-                    <input type="time" class="act-start" value="${start}">
-                    <span>～</span>
-                    <input type="time" class="act-end" value="${end}">
-                </div>
-            </td>
-            <td><input type="text" class="form-control act-sched" value="${schedule}" placeholder="例: オリエンテーション"></td>
+            <td><div class="time-select-group"><input type="time" class="act-start" value="${start}"><span>～</span><input type="time" class="act-end" value="${end}"></div></td>
+            <td><input type="text" class="form-control act-sched" value="${schedule}"></td>
             <td><textarea class="form-control act-action" style="min-height:60px;">${action}</textarea></td>
             <td style="text-align:center;"><button type="button" onclick="document.getElementById('row_${rowId}').remove()" style="color:red; background:none; border:none; font-size:20px; cursor:pointer;">×</button></td>
         </tr>`;
@@ -250,7 +235,7 @@
     document.getElementById('journalForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('saveBtn');
-        btn.innerText = "スプレッドシートへ送信中...";
+        btn.innerText = "保存中...";
         btn.disabled = true;
 
         const activities = Array.from(document.querySelectorAll('#activityBody tr')).map(tr => ({
@@ -277,16 +262,11 @@
 
         try {
             await fetch(GAS_URL, { method: "POST", body: JSON.stringify(data) });
-            alert("保存が完了しました！");
+            alert("保存しました。");
             refreshDateList();
-        } catch (err) {
-            alert("保存に失敗しました。");
-        } finally {
-            btn.innerText = "スプレッドシートに保存・追記する";
-            btn.disabled = false;
-        }
+        } catch (err) { alert("保存に失敗しました。"); }
+        finally { btn.innerText = "スプレッドシートに保存・追記する"; btn.disabled = false; }
     };
 </script>
-
 </body>
 </html>

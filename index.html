@@ -2,153 +2,181 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>実習日誌システム</title>
     <style>
-        /* 入力欄を大きくするスタイル */
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px; /* モバイルでズームしないサイズ */
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea.form-control {
-            line-height: 1.6;
-            min-height: 150px; /* テキストエリアの最低高さを確保 */
-        }
-        .card { padding: 20px; margin-bottom: 20px; border: 1px solid #eee; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .card { background: white; padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .form-control { width: 100%; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-top: 5px; }
+        textarea.form-control { min-height: 120px; line-height: 1.5; }
+        .reflection-area { min-height: 300px !important; } /* 振り返り欄を特に大きく */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { padding: 12px 24px; cursor: pointer; border-radius: 4px; border: none; font-weight: bold; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-load { background: #28a745; color: white; }
         .hidden { display: none; }
-        .screen { display: none; }
-        .active { display: block; }
-        .btn { padding: 10px 20px; cursor: pointer; }
-        .btn--primary { background: #007bff; color: white; border: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div id="loginScreen" class="screen active">
-            <div class="login-card card">
-                <h1>実習日誌システム</h1>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>学籍番号</label>
-                        <input type="text" id="studentId" class="form-control" required>
-                    </div><br>
-                    <div class="form-group">
-                        <label>パスワード</label>
-                        <input type="password" id="password" class="form-control" required>
-                    </div><br>
-                    <button type="submit" class="btn btn--primary">ログイン</button>
-                    <p id="loginError" style="color:red;"></p>
-                </form>
+
+    <div id="loginScreen" class="card" style="max-width: 400px; margin: 100px auto;">
+        <h2>学生ログイン</h2>
+        <input type="text" id="studentId" class="form-control" placeholder="学籍番号"><br>
+        <input type="password" id="password" class="form-control" placeholder="パスワード"><br>
+        <button onclick="login()" class="btn btn-primary" style="width:100%">ログイン</button>
+    </div>
+
+    <div id="mainApp" class="hidden">
+        <header class="card" style="display:flex; justify-content: space-between; align-items: center;">
+            <h1 style="margin:0;">実習日誌</h1>
+            <div>
+                <span id="userNameDisp"></span> さん
+                <button onclick="location.reload()" class="btn">ログアウト</button>
+            </div>
+        </header>
+
+        <div class="card">
+            <h3>作成・追記する日を選択</h3>
+            <div class="grid">
+                <input type="date" id="targetDate" class="form-control">
+                <button onclick="loadEntry()" class="btn btn-load">この日のデータを読み込む / 新規作成</button>
             </div>
         </div>
 
-        <div id="mainApp" class="screen">
-            <header>
-                <span id="currentUserName"></span> さん 
-                <button id="logoutBtn" class="btn">ログアウト</button>
-            </header>
-            <hr>
-            <form id="journalForm">
-                <section class="card">
-                    <h2>基本情報</h2>
-                    <input type="date" id="practiceDate" class="form-control" required><br><br>
-                    <input type="number" id="practiceDay" class="form-control" placeholder="実習何日目？" required>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <input type="time" id="attendanceTime" class="form-control" title="出勤">
-                        <input type="time" id="exitTime" class="form-control" title="退勤">
-                    </div>
-                </section>
-
-                <section class="card">
-                    <h2>学習目標</h2>
-                    <textarea id="learningGoals" class="form-control" rows="5"></textarea>
-                </section>
-
-                <section class="card">
-                    <h2>振り返り（具体的に大きく記入）</h2>
-                    <textarea id="reflection" class="form-control" rows="15"></textarea>
-                </section>
-
-                <section class="card">
-                    <h2>明日への課題</h2>
-                    <textarea id="tomorrowTasks" class="form-control" rows="5"></textarea>
-                </section>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn--primary">スプレッドシートへ保存</button>
+        <form id="journalForm" class="hidden">
+            <div class="card">
+                <div class="grid">
+                    <div><label>実習日目</label><input type="number" id="practiceDay" class="form-control" required></div>
+                    <div><label>年月日</label><input type="date" id="practiceDate" class="form-control" readonly></div>
                 </div>
-            </form>
-        </div>
+                <div class="grid" style="margin-top:15px;">
+                    <div><label>出席時間</label><input type="time" id="attendanceTime" class="form-control"></div>
+                    <div><label>退出時間</label><input type="time" id="exitTime" class="form-control"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <label>本日の学習目標</label>
+                <textarea id="learningGoals" class="form-control"></textarea>
+            </div>
+
+            <div class="card">
+                <label>活動記録 (時間・日程・行動)</label>
+                <table id="activityTable">
+                    <thead><tr><th>時間</th><th>日程</th><th>行動</th></tr></thead>
+                    <tbody id="activityBody">
+                        </tbody>
+                </table>
+                <button type="button" onclick="addActivityRow()" class="btn" style="margin-top:10px;">＋行を追加</button>
+            </div>
+
+            <div class="card">
+                <label>今日一日を振り返って</label>
+                <textarea id="reflection" class="form-control reflection-area" placeholder="印象に残った学び、考えたこと、感じたこと"></textarea>
+            </div>
+
+            <div class="card">
+                <label>明日への課題</label>
+                <textarea id="tomorrowTasks" class="form-control"></textarea>
+            </div>
+
+            <div class="card">
+                <label>実習指導者からのコメント</label>
+                <textarea id="instructorComment" class="form-control"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; font-size:18px;">スプレッドシートに保存</button>
+        </form>
     </div>
 
     <script>
-        // ★ここにデプロイしたGASのURLを貼り付けてください
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzmUGHBbe6Yh_p1zs1-joSm2K88MG5R4xxsKR_JvUZsVKd-uAf_Jk86KpDCXgjL2YvztA/exec";
+        const GAS_URL = "YOUR_GAS_WEB_APP_URL";
+        let user = { id: "", name: "" };
 
-        const loginForm = document.getElementById('loginForm');
-        const journalForm = document.getElementById('journalForm');
-        let currentUser = { id: "", name: "" };
-
-        // ログイン処理
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        async function login() {
             const studentId = document.getElementById('studentId').value;
             const password = document.getElementById('password').value;
-
-            const response = await fetch(GAS_URL, {
-                method: "POST",
-                body: JSON.stringify({ action: "login", studentId, password })
-            });
-            const result = await response.json();
-
+            const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", studentId, password })});
+            const result = await res.json();
             if (result.success) {
-                currentUser.id = studentId;
-                currentUser.name = result.userName;
-                document.getElementById('currentUserName').innerText = result.userName;
-                document.getElementById('loginScreen').classList.remove('active');
-                document.getElementById('mainApp').classList.add('active');
-            } else {
-                document.getElementById('loginError').innerText = "IDまたはパスワードが違います";
-            }
-        });
+                user = { id: studentId, name: result.userName };
+                document.getElementById('userNameDisp').innerText = result.userName;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+            } else { alert("ログイン失敗"); }
+        }
 
-        // 保存処理
-        journalForm.addEventListener('submit', async (e) => {
+        async function loadEntry() {
+            const date = document.getElementById('targetDate').value;
+            if(!date) return alert("日付を選択してください");
+            
+            const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "load", studentId: user.id, date })});
+            const result = await res.json();
+            
+            document.getElementById('journalForm').classList.remove('hidden');
+            document.getElementById('practiceDate').value = date;
+            
+            if (result.success) {
+                const d = result.data;
+                document.getElementById('practiceDay').value = d[3];
+                document.getElementById('attendanceTime').value = d[5];
+                document.getElementById('exitTime').value = d[6];
+                document.getElementById('learningGoals').value = d[7];
+                renderActivities(JSON.parse(d[8]));
+                document.getElementById('reflection').value = d[9];
+                document.getElementById('tomorrowTasks').value = d[10];
+                document.getElementById('instructorComment').value = d[11];
+                alert("過去のデータを読み込みました。追記して保存できます。");
+            } else {
+                document.getElementById('journalForm').reset();
+                document.getElementById('practiceDate').value = date;
+                document.getElementById('activityBody').innerHTML = "";
+                addActivityRow();
+                alert("新規作成として開始します。");
+            }
+        }
+
+        function addActivityRow(time="", schedule="", action="") {
+            const row = `<tr>
+                <td><input type="text" class="form-control act-time" value="${time}"></td>
+                <td><input type="text" class="form-control act-sched" value="${schedule}"></td>
+                <td><input type="text" class="form-control act-action" value="${action}"></td>
+            </tr>`;
+            document.getElementById('activityBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        function renderActivities(list) {
+            document.getElementById('activityBody').innerHTML = "";
+            list.forEach(a => addActivityRow(a.time, a.schedule, a.action));
+        }
+
+        document.getElementById('journalForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.disabled = true;
-            btn.innerText = "保存中...";
+            const activities = Array.from(document.querySelectorAll('#activityBody tr')).map(tr => ({
+                time: tr.querySelector('.act-time').value,
+                schedule: tr.querySelector('.act-sched').value,
+                action: tr.querySelector('.act-action').value
+            }));
 
             const data = {
                 action: "save",
-                studentId: currentUser.id,
-                studentName: currentUser.name,
+                studentId: user.id,
+                studentName: user.name,
                 practiceDay: document.getElementById('practiceDay').value,
                 practiceDate: document.getElementById('practiceDate').value,
                 attendanceTime: document.getElementById('attendanceTime').value,
                 exitTime: document.getElementById('exitTime').value,
                 learningGoals: document.getElementById('learningGoals').value,
+                activities: activities,
                 reflection: document.getElementById('reflection').value,
-                tomorrowTasks: document.getElementById('tomorrowTasks').value
+                tomorrowTasks: document.getElementById('tomorrowTasks').value,
+                instructorComment: document.getElementById('instructorComment').value
             };
 
-            try {
-                await fetch(GAS_URL, { method: "POST", body: JSON.stringify(data) });
-                alert("スプレッドシートに追記しました！");
-                journalForm.reset();
-            } catch (err) {
-                alert("保存に失敗しました");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "スプレッドシートへ保存";
-            }
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', () => location.reload());
+            await fetch(GAS_URL, { method: "POST", body: JSON.stringify(data) });
+            alert("保存が完了しました。");
+        };
     </script>
 </body>
 </html>

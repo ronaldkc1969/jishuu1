@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>実習日誌 - 学生管理システム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- ログイン画面 -->
+        <div id="loginScreen" class="screen active">
+            <div class="login-container">
+                <div class="login-card card">
+                    <div class="login-header">
+                        <h1 class="login-title">実習日誌システム</h1>
+                        <p class="login-subtitle">学生ログイン</p>
+                    </div>
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <label class="form-label" for="studentId">学生ID</label>
+                            <input type="text" id="studentId" name="studentId" class="form-control" placeholder="学生IDを入力してください" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">パスワード</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="パスワードを入力してください" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--primary btn--full-width">ログイン</button>
+                        </div>
+                        <div id="loginError" class="error-message hidden"></div>
+                        <div id="loginAttempts" class="login-attempts hidden">
+                            <span class="status status--warning">残り試行回数: <span id="attemptsLeft">5</span>回</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- メインアプリケーション -->
+        <div id="mainApp" class="screen">
+            <!-- ヘッダー部分 -->
+            <header class="app-header">
+                <div class="container">
+                    <div class="header-content flex items-center justify-between">
+                        <h1 class="app-title">実習日誌</h1>
+                        <div class="header-info flex items-center gap-16">
+                            <span class="current-date" id="currentDate"></span>
+                            <div class="user-info">
+                                <span class="user-name" id="currentUserName"></span>
+                                <button class="btn btn--secondary btn--sm" id="logoutBtn">ログアウト</button>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="nav-menu">
+                        <button class="btn btn--secondary" id="newEntryBtn">新規作成</button>
+                        <button class="btn btn--secondary" id="journalListBtn">日誌一覧</button>
+                        <button class="btn btn--secondary" id="printBtn">印刷</button>
+                    </nav>
+                </div>
+            </header>
+
+            <main class="main-content container">
+                <!-- 新規作成画面 -->
+                <div id="entryScreen" class="screen active">
+                    <form id="journalForm" class="journal-form">
+                        <!-- 基本情報セクション -->
+                        <section class="form-section card">
+                            <h2>基本情報</h2>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="studentName">実習生氏名</label>
+                                    <input type="text" id="studentName" name="studentName" class="form-control" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="practiceDay">実習日目</label>
+                                    <input type="number" id="practiceDay" name="practiceDay" class="form-control" placeholder="例: 1" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="practiceDate">年月日</label>
+                                    <input type="date" id="practiceDate" name="practiceDate" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="attendanceTime">出席時間</label>
+                                    <input type="time" id="attendanceTime" name="attendanceTime" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="exitTime">退出時間</label>
+                                    <input type="time" id="exitTime" name="exitTime" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="weather">天候</label>
+                                    <select id="weather" name="weather" class="form-control" required>
+                                        <option value="">選択してください</option>
+                                        <option value="晴れ">晴れ</option>
+                                        <option value="曇り">曇り</option>
+                                        <option value="雨">雨</option>
+                                        <option value="雪">雪</option>
+                                        <option value="その他">その他</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 学習目標セクション -->
+                        <section class="form-section card">
+                            <h2>本日の学習目標</h2>
+                            <div class="form-group">
+                                <textarea id="learningGoals" name="learningGoals" class="form-control" rows="4" placeholder="今日の実習で達成したい目標を記入してください" required></textarea>
+                            </div>
+                        </section>
+
+                        <!-- 活動記録セクション -->
+                        <section class="form-section card">
+                            <div class="section-header flex items-center justify-between">
+                                <h2>活動記録</h2>
+                                <button type="button" class="btn btn--secondary btn--sm" id="addActivityBtn">行を追加</button>
+                            </div>
+                            <div class="activity-table-container">
+                                <table class="activity-table" id="activityTable">
+                                    <thead>
+                                        <tr>
+                                            <th>時間</th>
+                                            <th>日程</th>
+                                            <th>行動</th>
+                                            <th>削除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activityTableBody">
+                                        <!-- 動的に行が追加される -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- 振り返りセクション -->
+                        <section class="form-section card">
+                            <h2>今日一日を振り返って</h2>
+                            <p class="section-description">具体的な実習場面、それを通して考えたこと、感じたこと、その根拠</p>
+                            <div class="form-group">
+                                <textarea id="reflection" name="reflection" class="form-control" rows="18" placeholder="具体的な実習場面とそれを通して考えたこと、感じたこと、その根拠を記入してください" required></textarea>
+                            </div>
+                        </section>
+
+                        <!-- 課題セクション -->
+                        <section class="form-section card">
+                            <h2>明日への課題</h2>
+                            <div class="form-group">
+                                <textarea id="tomorrowTasks" name="tomorrowTasks" class="form-control" rows="6" placeholder="明日の実習に向けた課題や改善点を記入してください" required></textarea>
+                            </div>
+                        </section>
+
+                        <!-- 指導者コメントセクション -->
+                        <section class="form-section card">
+                            <h2>実習指導者からのコメント</h2>
+                            <div class="form-group">
+                                <textarea id="instructorComment" name="instructorComment" class="form-control" rows="6" placeholder="実習指導者からのコメント・アドバイス"></textarea>
+                            </div>
+                        </section>
+
+                        <!-- 保存ボタン -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--primary">保存</button>
+                            <button type="button" class="btn btn--secondary" id="draftSaveBtn">下書き保存</button>
+                            <button type="button" class="btn btn--outline" id="clearFormBtn">クリア</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 日誌一覧画面 -->
+                <div id="listScreen" class="screen">
+                    <div class="list-header flex items-center justify-between mb-8">
+                        <h2>過去の日誌一覧</h2>
+                        <div class="search-controls">
+                            <input type="date" id="searchDate" class="form-control" placeholder="日付で検索">
+                            <button class="btn btn--secondary btn--sm" id="searchBtn">検索</button>
+                        </div>
+                    </div>
+                    <div id="journalList" class="journal-list">
+                        <!-- 日誌リストが動的に追加される -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 印刷用画面 -->
+        <div id="printScreen" class="screen print-view">
+            <div id="printContent">
+                <!-- 印刷内容が動的に追加される -->
+            </div>
+        </div>
+
+        <!-- 保存成功メッセージ -->
+        <div id="saveMessage" class="save-message hidden">
+            <div class="status status--success">保存しました</div>
+        </div>
+
+        <!-- 自動保存インジケーター -->
+        <div id="autoSaveIndicator" class="auto-save-indicator hidden">
+            <div class="status status--info">自動保存中...</div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
